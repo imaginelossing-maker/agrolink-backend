@@ -1,7 +1,7 @@
 import express from "express";
 import Product from "../models/product.js";
 import { verifyToken } from "../middleware/authMiddleware.js";
-import { createProduct, getProducts } from "../controllers/productcontroller.js";
+import { createProduct, getProducts, getFarmerProducts } from "../controllers/productcontroller.js";
 
 const router = express.Router();
 
@@ -11,6 +11,11 @@ router.post("/", verifyToken, createProduct);
 /* GET PRODUCTS */
 router.get("/", getProducts);
 
+router.get(
+    "/my-products",
+    verifyToken,
+    getFarmerProducts
+);
 /* DELETE PRODUCT */
 router.delete("/:id", verifyToken, async (req, res) => {
     try {

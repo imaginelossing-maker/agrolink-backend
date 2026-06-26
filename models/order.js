@@ -1,18 +1,28 @@
 import mongoose from "mongoose";
 
-const orderSchema=new mongoose.Schema({
+const orderSchema = new mongoose.Schema({
 
-user:{
-type:mongoose.Schema.Types.ObjectId,
-ref:"User"
-},
+    user:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
+    },
 
-products:[{
-type:mongoose.Schema.Types.ObjectId,
-ref:"Product"
-}],
+    products:[{
+        product:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Product"
+        },
 
-totalPrice:Number
+        quantity:{
+            type:Number,
+            required:true
+        }
+    }],
+
+    totalPrice:{
+        type:Number,
+        default:0
+    }
 
 },{timestamps:true});
 
