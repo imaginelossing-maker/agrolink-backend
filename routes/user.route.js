@@ -1,9 +1,15 @@
 import express from "express";
+import { getUsers } from "../controllers/usercontroller.js";
+import { verifyToken } from "../middleware/authMiddleware.js";
+import { authorizeRoles } from "../middleware/roleMiddleware.js";
 
-import {getUsers} from "../controllers/usercontroller.js";
+const router = express.Router();
 
-const router=express.Router();
-
-router.get("/",getUsers);
+router.get(
+    "/",
+    verifyToken,
+    authorizeRoles("admin"),
+    getUsers
+);
 
 export default router;

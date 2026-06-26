@@ -16,6 +16,7 @@ export function verifyToken(req, res, next) {
         req.user = decoded; // contains id, email, role
         next();
     } catch (error) {
-        return res.status(401).json({ msg: "Invalid token" });
+        console.log(error)
+        return res.status(401).json({ msg: error.message });
     }
 }
