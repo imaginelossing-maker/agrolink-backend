@@ -1,7 +1,7 @@
 import User from "../models/user.js";
 import { createHash, compareHash } from "../utils/encrypt.js";
 import { generateToken } from "../utils/jwt.js";
-
+import crypto from "crypto"
 /* ---------------- LOGIN ---------------- */
 
 export async function login(req, res) {
@@ -164,5 +164,108 @@ export async function changePassword(req, res) {
         return res.status(500).json({
             msg: error.message,
         });
+    }
+}
+/* ---------------- FORGOT PASSWORD ---------------- */
+
+export async function forgotPassword(req,res){
+
+    try{
+
+        const { email } = req.body;
+
+        const user = await User.findOne({email});
+
+        if(!user){
+            return res.status(404).json({
+                msg:"User not found"
+            });
+        }
+
+        const resetToken = crypto
+            .randomBytes(32)
+            .toString("hex");
+
+        user.resetToken = resetToken;
+
+        user.resetTokenExpiry =
+            Date.now() + 3600000; // 1 hour
+
+        await user.save();
+
+        return res.status(200).json({
+
+            msg:"Reset link generated",
+
+            link:
+            `http://localhost:3000/reset-password/${resetToken}`
+
+        });
+
+    }catch(error){
+
+        return res.status(500).json({
+            msg:error.message
+        });
+
+    }
+}
+/* ---------------- RESET PASSWORD ---------------- */
+
+export async function resetPassword(req,res){
+
+    try{
+
+        const { password } = req.body;
+          
+if (!password) {
+    return res.status(400).json({
+        msg: "Password is required"
+    });
+}
+        const user = await User.findOne({
+
+            resetToken:req.params.token,
+
+            resetTokenExpiry:{
+                $gt: Date.now()
+            }
+
+        });
+
+        if(!user){
+
+            return res.status(400).json({
+                msg:"Invalid or expired token"
+            });
+
+        }
+
+        // hash new password
+        console.log("BODY:", req.body);
+console.log("PASSWORD:", password);
+        const hashedPassword =
+            await createHash(password);
+
+        user.password = hashedPassword;
+
+        // clear reset values
+        user.resetToken = undefined;
+        user.resetTokenExpiry = undefined;
+
+        await user.save();
+
+        return res.status(200).json({
+
+            msg:"Password reset successful"
+
+        });
+
+    }catch(error){
+
+        return res.status(500).json({
+            msg:error.message
+        });
+
     }
 }

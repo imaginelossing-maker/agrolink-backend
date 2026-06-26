@@ -21,6 +21,14 @@ const userSchema = new mongoose.Schema({
         type:String,
         enum:["buyer", "farmer","admin"],
         default:"buyer"
+    },
+
+     resetToken:{
+        type:String
+    },
+
+    resetTokenExpiry:{
+        type:Date
     }
 
 },{timestamps:true});

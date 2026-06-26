@@ -1,5 +1,5 @@
 import express from "express";
-import { register, login, profile, changePassword} from "../controllers/authcontroller.js";
+import { register, login, profile, changePassword, forgotPassword, resetPassword} from "../controllers/authcontroller.js";
 import { verifyToken } from "../middleware/authMiddleware.js";
 import { authorizeRoles } from "../middleware/roleMiddleware.js";
 
@@ -13,6 +13,11 @@ router.put(
     verifyToken,
     changePassword
 );
+router.post(
+    "/forgot-password",
+    forgotPassword
+);
+router.put("/reset-password/:token", resetPassword);
 router.get(  "/admin", verifyToken, authorizeRoles("admin"),
     (req, res) => {
         res.status(200).json({
@@ -21,5 +26,6 @@ router.get(  "/admin", verifyToken, authorizeRoles("admin"),
         });
     }
 );
+
 
 export default router;
