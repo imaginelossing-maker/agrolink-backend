@@ -9,7 +9,7 @@ const router = express.Router();
 router.post("/", verifyToken, createProduct);
 
 /* GET PRODUCTS */
-router.get("/", getProducts);
+router.get("/", verifyToken, getProducts);
 
 router.get(
     "/my-products",
