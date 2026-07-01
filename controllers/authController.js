@@ -39,11 +39,11 @@ export async function login(req, res) {
 }
 
 /* ---------------- REGISTER ---------------- */
-
 export async function register(req, res) {
     try {
         const { fullname, email, password, role } = req.body;
 
+        // Check if user exists
         const existingUser = await User.findOne({ email });
 
         if (existingUser) {
@@ -52,8 +52,10 @@ export async function register(req, res) {
             });
         }
 
+        // Hash password
         const hashedPassword = await createHash(password);
 
+        // Create user
         const newUser = await User.create({
             fullname,
             email,
@@ -61,10 +63,13 @@ export async function register(req, res) {
             role,
         });
 
-        const token = generateToken(newUser);
+        // Remove password before sending response
+        const user = await User.findById(newUser._id)
+            .select("-password");
 
         return res.status(201).json({
-            token,
+            msg: "User created successfully",
+            user,
         });
 
     } catch (error) {
